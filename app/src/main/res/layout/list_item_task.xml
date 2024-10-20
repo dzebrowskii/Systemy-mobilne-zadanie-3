@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Pole TextView do wyświetlania nazwy zadania -->
+    <TextView
+        android:id="@+id/task_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nazwa zadania"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Pole TextView do wyświetlania daty zadania -->
+    <TextView
+        android:id="@+id/task_item_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Data zadania"
+        android:textSize="14sp"
+        android:textColor="#888888" />
+
+</LinearLayout>
