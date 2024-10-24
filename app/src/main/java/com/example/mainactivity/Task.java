@@ -10,6 +10,9 @@ public class Task {
     private Date date;      // Data zadania
     private boolean done;   // Czy zadanie zostało ukończone
 
+
+    private Category category;
+
     public Task() {
         id = UUID.randomUUID(); // Generowanie unikalnego identyfikatora
         date = new Date();      // Ustawienie bieżącej daty
@@ -37,6 +40,16 @@ public class Task {
 
     public UUID getId() {
         return id;
+    }
+
+    // Getter - metoda pozwalająca na pobranie wartości category
+    public Category getCategory() {
+        return category;
+    }
+
+    // Setter - metoda pozwalająca na ustawienie wartości category
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
 }

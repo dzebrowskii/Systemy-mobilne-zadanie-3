@@ -24,6 +24,13 @@ public class TaskStorage {
             Task task = new Task();
             task.setName("Pilne zadanie numer " + i);
             task.setDone(i % 3 == 0);  // Co trzecie zadanie jest oznaczone jako wykonane
+
+            if (i % 3 == 0) {
+                task.setCategory(Category.STUDIES); // Co trzecie zadanie ma kategorię STUDIES
+            } else {
+                task.setCategory(Category.HOME); // Pozostałe zadania mają kategorię HOME
+            }
+
             tasks.add(task);
         }
     }
