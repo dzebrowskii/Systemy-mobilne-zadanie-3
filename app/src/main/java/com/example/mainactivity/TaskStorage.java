@@ -49,4 +49,8 @@ public class TaskStorage {
         }
         return null;  // Jeśli nie znaleziono zadania o danym ID zwracamy nulla
     }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
 }

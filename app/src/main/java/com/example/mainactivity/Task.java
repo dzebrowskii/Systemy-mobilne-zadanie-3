@@ -11,6 +11,7 @@ public class Task {
     private boolean done;   // Czy zadanie zostało ukończone
 
 
+
     private Category category;
 
     public Task() {
@@ -36,6 +37,10 @@ public class Task {
 
     public Date getDate() {
         return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public UUID getId() {
