@@ -1,0 +1,13 @@
+<resources>
+    <string name="name_hint">Enter task name</string>
+    <string name="name_label">Name</string>
+    <string name="details_label">Details</string>
+    <string name="done_label">Done</string>
+    <string name="app_name">TodoApp</string>
+    <string name="task_add_new">New Task</string>
+    <string name="show_subtitle">Show Subtitle</string>
+    <string name="hide_subtitle">Hide Subtitle</string>
+    <string name="subtitle_format">%1$d tasks</string>
+    <string name="category_icon">Category Icon</string>
+    <string name="task_list_title">Tasks List</string>
+</resources>

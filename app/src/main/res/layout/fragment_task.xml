@@ -1,55 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:layout_margin="20dp"
-    tools:context=".TaskListActivity">>
+    android:layout_margin="@dimen/spacing_large"
+    tools:context=".TaskListActivity">
 
-
+    <!-- Tytuł dla pola nazwy zadania -->
     <TextView
-        style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/name_label" />
+        style="@style/TextFieldsStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/name_label" />
 
+    <!-- Pole do wprowadzania nazwy zadania -->
     <EditText
         android:id="@+id/task_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/name_hint" />
+        style="@style/InputFieldsStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/name_hint" />
 
+    <!-- Tytuł dla pola szczegółów zadania -->
     <TextView
-        style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/details_label" />
+        style="@style/TextFieldsStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/details_label" />
 
+    <!-- Pole do wyświetlania daty zadania (tylko do odczytu) -->
     <EditText
         android:id="@+id/task_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:autofillHints=""
-        android:inputType="date" />
+        style="@style/InputFieldsStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:cursorVisible="false"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:autofillHints=""
+    android:inputType="date" />
 
+    <!-- CheckBox dla oznaczenia zadania jako wykonanego -->
     <CheckBox
         android:id="@+id/task_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/done_label" />
+        android:text="@string/done_label"
+        android:textColor="@color/colorAccent"
+        android:padding="@dimen/spacing_small" />
 
+    <!-- Spinner do wyboru kategorii zadania -->
     <Spinner
         android:id="@+id/task_category"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-
-
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_small" />
 
 </LinearLayout>

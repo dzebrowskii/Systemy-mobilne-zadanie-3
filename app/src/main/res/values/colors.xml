@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorBackground">#FFFFFF</color> <!-- Tło główne aplikacji -->
+    <color name="colorBackgroundSecondary">#F5F5F5</color> <!-- Tło dla fragmentów -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Kolor tekstu na toolbarze -->
 </resources>
+

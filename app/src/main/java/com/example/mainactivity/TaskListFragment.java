@@ -22,6 +22,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.mainactivity.R;
+
 
 import java.util.List;
 
@@ -30,6 +32,8 @@ public class TaskListFragment extends Fragment {
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
     public static final String KEY_EXTRA_TASK_ID = "KEY_EXTRA_TASK_ID";
+    private boolean subtitleVisible;
+
 
 
 
@@ -37,6 +41,11 @@ public class TaskListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (savedInstanceState != null) {
+            subtitleVisible = savedInstanceState.getBoolean("subtitleVisible");
+        }
+
         // Inflatujemy widok z pliku fragment_task_list.xml
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
 
@@ -59,23 +68,34 @@ public class TaskListFragment extends Fragment {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
                 inflater.inflate(R.menu.fragment_task_menu, menu); // Ładowanie menu z pliku XML
+
+                MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+                if (subtitleVisible) {
+                    subtitleItem.setTitle(R.string.hide_subtitle);
+                } else {
+                    subtitleItem.setTitle(R.string.show_subtitle);
+                }
             }
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.new_task) {
-                    // Tworzenie nowego zadania
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.new_task) {
+                    // Obsługa tworzenia nowego zadania
                     Task task = new Task();
                     TaskStorage.getInstance().getTasks().add(task);
-
-                    // Tworzenie intencji do MainActivity i przekazanie ID nowego zadania
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra(TaskListFragment.KEY_EXTRA_TASK_ID, task.getId());
-                    startActivity(intent);
-
+                    updateView();
                     return true;
+                } else if (itemId == R.id.show_subtitle) {
+                    // Wywołaj metodę do aktualizacji podtytułu
+                    subtitleVisible = !subtitleVisible;
+                    getActivity().invalidateOptionsMenu();
+                    updateSubtitle();
+                    return true;
+                } else {
+                    return false;
                 }
-                return false;
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
@@ -113,9 +133,10 @@ public class TaskListFragment extends Fragment {
             checkBox.setChecked(task.isDone());
 
             // Dodajemy listener, który ustawia stan zadania na podstawie zaznaczenia CheckBox
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                    tasks.get(holder.getBindingAdapterPosition()).setDone(isChecked)
-            );
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                task.setDone(isChecked);
+                recyclerView.post(() -> adapter.notifyItemChanged(holder.getBindingAdapterPosition()));
+            });
 
 
             holder.bind(task);
@@ -142,7 +163,7 @@ public class TaskListFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
 
-
+        updateSubtitle(); // Aktualizacja podtytułu
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -156,14 +177,14 @@ public class TaskListFragment extends Fragment {
         public TaskHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_task, parent, false));
 
-            // Ustawienie nasłuchiwania kliknięć na cały element listy
-            itemView.setOnClickListener(this);
-
             // Inicjalizacja widoków
             nameTextView = itemView.findViewById(R.id.task_item_name);
             dateTextView = itemView.findViewById(R.id.task_item_date);
             iconImageView = itemView.findViewById(R.id.category_icon);
             taskCheckBox = itemView.findViewById(R.id.task_checkbox);
+
+            // Ustawienie nasłuchiwania kliknięć na cały element listy
+            itemView.setOnClickListener(this);
         }
 
         // Metoda wiążąca dane zadania z widokami
@@ -172,11 +193,12 @@ public class TaskListFragment extends Fragment {
             nameTextView.setText(task.getName());  // Ustawiamy nazwę zadania w widoku
             dateTextView.setText(task.getDate().toString());  // Ustawiamy datę zadania w widoku
 
+
             // Ustawienie ikony w zależności od kategorii
             if (task.getCategory().equals(Category.HOME)) {
-                iconImageView.setImageResource(R.drawable.ic_house); // ikona dla kategorii HOME
-            } else {
-                iconImageView.setImageResource(R.drawable.ic_study); // ikona dla kategorii STUDIES
+                iconImageView.setImageResource(R.drawable.ic_house);
+            } else if (task.getCategory().equals(Category.STUDIES)) {
+                iconImageView.setImageResource(R.drawable.ic_study);
             }
 
             // Ustawienie przekreślenia, jeśli zadanie jest wykonane
@@ -186,8 +208,7 @@ public class TaskListFragment extends Fragment {
                 nameTextView.setPaintFlags(nameTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             }
 
-            // Ustawienie stanu CheckBox na podstawie wartości isDone w obiekcie Task
-            taskCheckBox.setChecked(task.isDone());
+
 
         }
 
@@ -229,12 +250,25 @@ public class TaskListFragment extends Fragment {
 
         // Utwórz tekst podtytułu z formatem tekstu
         String subtitle = getString(R.string.subtitle_format, todoTasksCount);
+        if (!subtitleVisible) {
+            subtitle = null; // Ukrycie podtytułu
+        }
 
         // Ustaw podtytuł na ActionBar
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         if (appCompatActivity != null && appCompatActivity.getSupportActionBar() != null) {
-            appCompatActivity.getSupportActionBar().setSubtitle(subtitle);
+            if (subtitleVisible) {
+                appCompatActivity.getSupportActionBar().setSubtitle(subtitle);
+            } else {
+                appCompatActivity.getSupportActionBar().setSubtitle(null);
+            }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("subtitleVisible", subtitleVisible);
     }
 
 

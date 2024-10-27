@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/spacing_medium"
+    android:background="@color/colorBackground">
 
     <!-- Dodajemy tytuł dla listy zadań -->
     <TextView
         android:id="@+id/task_list_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lista Zadań"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp" />
+        style="@style/TextFieldsStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/task_list_title"
+    android:layout_gravity="center_horizontal"
+    android:paddingBottom="@dimen/spacing_small" />
 
     <!-- RecyclerView do wyświetlania zadań -->
     <androidx.recyclerview.widget.RecyclerView
@@ -23,9 +24,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
-
-
+        android:paddingTop="@dimen/spacing_small"
+        android:paddingBottom="@dimen/spacing_small" /> <!-- Zastosowanie odstępów z dimens.xml -->
 
 </LinearLayout>

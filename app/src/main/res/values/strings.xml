@@ -8,5 +8,9 @@
     <string name="show_subtitle">Pokaż podtytuł</string>
     <string name="hide_subtitle">Ukryj podtytuł</string>
     <string name="subtitle_format">%1$d zadań</string>
+    <string name="category_icon">Ikona kategorii</string>
+    <string name="task_list_title">Lista Zadań</string>
+
+
 
 </resources>

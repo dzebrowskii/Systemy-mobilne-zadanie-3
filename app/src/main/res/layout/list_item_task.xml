@@ -1,42 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- list_item_task.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
-    tools:ignore="ExtraText">
+    android:padding="@dimen/task_item_padding"
+    android:background="@color/colorBackgroundSecondary"> <!-- Ustawienie tła dla elementu listy -->
 
-    <!-- CheckBox po lewej stronie od nazwy zadania -->
+    <!-- Kontrolka CheckBox -->
     <CheckBox
         android:id="@+id/task_checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!-- Pole tekstowe wyświetlające nazwę zadania -->
-    <TextView
-        android:id="@+id/task_item_name"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:text="Nazwa zadania" />
+        android:buttonTint="@color/colorPrimary" /> <!-- Kolor przycisku CheckBox -->
 
-    <!-- Pole tekstowe wyświetlające datę zadania -->
-    <TextView
-        android:id="@+id/task_item_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Data zadania"
-        android:layout_marginEnd="8dp"
-        android:textSize="14sp" />
-
-    <!-- Dodana kontrolka ImageView dla ikony kategorii zadania -->
+    <!-- Kontrolka ImageView dla ikony kategorii -->
     <ImageView
         android:id="@+id/category_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_house"
-        tools:srcCompat="@drawable/ic_house" />  <!-- Na początku ustaw przykładową ikonę -->
-    android:layout_gravity="center_vertical" />
+        android:layout_width="@dimen/icon_size_small"
+        android:layout_height="@dimen/icon_size_small"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:contentDescription="@string/category_icon" />
+
+    <!-- Tekst nazwy zadania -->
+    <TextView
+        android:id="@+id/task_item_name"
+        style="@style/TextFieldsStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/spacing_small"
+    android:text="Task Name" />
+
+    <!-- Tekst daty zadania -->
+    <TextView
+        android:id="@+id/task_item_date"
+        style="@style/TextFieldsStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/spacing_small"
+    android:text="Task Date" />
+
 </LinearLayout>
