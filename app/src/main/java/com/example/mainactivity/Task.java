@@ -5,56 +5,32 @@ import java.util.UUID;
 
 public class Task {
 
-    private UUID id;        // Unikalny identyfikator zadania
-    private String name;    // Nazwa zadania
-    private Date date;      // Data zadania
-    private boolean done;   // Czy zadanie zostało ukończone
-
-
-
+    private UUID id;
+    private String name;
+    private String details; // Szczegóły zadania
+    private Date date;
+    private boolean done;
     private Category category;
 
     public Task() {
-        id = UUID.randomUUID(); // Generowanie unikalnego identyfikatora
-        date = new Date();      // Ustawienie bieżącej daty
+        id = UUID.randomUUID();
+        date = new Date();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDetails() { return details; }
+    public void setDetails(String details) { this.details = details; }
 
-    public boolean isDone() {
-        return done;
-    }
+    public Date getDate() { return date; }
+    public void setDate(Date date) { this.date = date; }
 
-    public void setDone(boolean done) {
-        this.done = done;
-    }
+    public boolean isDone() { return done; }
+    public void setDone(boolean done) { this.done = done; }
 
-    public Date getDate() {
-        return date;
-    }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    // Getter - metoda pozwalająca na pobranie wartości category
-    public Category getCategory() {
-        return category;
-    }
-
-    // Setter - metoda pozwalająca na ustawienie wartości category
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
+    public UUID getId() { return id; }
 }

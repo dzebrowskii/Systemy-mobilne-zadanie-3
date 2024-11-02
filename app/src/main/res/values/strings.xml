@@ -5,11 +5,14 @@
     <string name="done_label">Wykonane</string>
     <string name="app_name">TodoApp</string>
     <string name="task_add_new">Nowe zadanie</string>
-    <string name="show_subtitle">Pokaż podtytuł</string>
+    <string name="show_subtitle">pokaz liczbę zadań</string>
     <string name="hide_subtitle">Ukryj podtytuł</string>
     <string name="subtitle_format">%1$d zadań</string>
     <string name="category_icon">Ikona kategorii</string>
     <string name="task_list_title">Lista Zadań</string>
+    <string name="task_name_hint">Wpisz nazwę zadania</string>
+    <string name="task_details_hint">Wpisz szczegóły zadania</string>
+    <string name="task_date_hint">Wybierz datę</string>
 
 
 

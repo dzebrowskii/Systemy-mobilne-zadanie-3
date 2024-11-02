@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Pole do wpisania nazwy zadania -->
+    <EditText
+        android:id="@+id/task_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/task_name_hint" />
+
+    <!-- Pole do wpisania szczegółów zadania -->
+    <EditText
+        android:id="@+id/task_details_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/task_details_hint"
+        android:layout_marginTop="8dp" />
+
+    <!-- Spinner do wyboru kategorii zadania -->
+    <Spinner
+        android:id="@+id/task_category_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+    <!-- TextView do wyboru daty zadania -->
+    <TextView
+        android:id="@+id/task_date_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/task_date_hint"
+        android:padding="12dp"
+         />
+
+</LinearLayout>

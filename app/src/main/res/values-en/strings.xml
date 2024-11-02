@@ -5,9 +5,12 @@
     <string name="done_label">Done</string>
     <string name="app_name">TodoApp</string>
     <string name="task_add_new">New Task</string>
-    <string name="show_subtitle">Show Subtitle</string>
-    <string name="hide_subtitle">Hide Subtitle</string>
+    <string name="show_subtitle">Show count</string>
+    <string name="hide_subtitle">Hide count</string>
     <string name="subtitle_format">%1$d tasks</string>
     <string name="category_icon">Category Icon</string>
     <string name="task_list_title">Tasks List</string>
+    <string name="task_name_hint">Write task name</string>
+    <string name="task_details_hint">Write task details</string>
+    <string name="task_date_hint">Pick date</string>
 </resources>

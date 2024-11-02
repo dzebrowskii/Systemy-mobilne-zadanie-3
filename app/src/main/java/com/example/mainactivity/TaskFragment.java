@@ -39,8 +39,6 @@ public class TaskFragment extends Fragment {
         UUID taskId = (UUID) getArguments().getSerializable(ARG_TASK_ID);
         // Pobranie zadania z TaskStorage na podstawie taskId
         task = TaskStorage.getInstance().getTask(taskId);
-
-
     }
 
     @Override

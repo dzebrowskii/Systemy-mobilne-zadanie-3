@@ -1,7 +1,9 @@
 package com.example.mainactivity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,22 +11,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.mainactivity.R;
-
-
+import java.util.Date;
 import java.util.List;
 
 public class TaskListFragment extends Fragment {
@@ -34,47 +37,32 @@ public class TaskListFragment extends Fragment {
     public static final String KEY_EXTRA_TASK_ID = "KEY_EXTRA_TASK_ID";
     private boolean subtitleVisible;
 
-
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         if (savedInstanceState != null) {
             subtitleVisible = savedInstanceState.getBoolean("subtitleVisible");
         }
 
-        // Inflatujemy widok z pliku fragment_task_list.xml
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
-
-        // Pobieramy odniesienie do RecyclerView z układu
         recyclerView = view.findViewById(R.id.task_recycler_view);
-
-        // Ustawiamy LayoutManager dla RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        updateView();
+        setupObservers(); // Inicjalizacja obserwatora dla LiveData
 
-        return view; // Zwracamy widok dla fragmentu
+        return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) { // po stworzeniu menu dodajemy menu do widoku
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        requireActivity().addMenuProvider(new MenuProvider() { //dodajemy opcje menu
+        requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-                inflater.inflate(R.menu.fragment_task_menu, menu); // Ładowanie menu z pliku XML
-
+                inflater.inflate(R.menu.fragment_task_menu, menu);
                 MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
-                if (subtitleVisible) {
-                    subtitleItem.setTitle(R.string.hide_subtitle);
-                } else {
-                    subtitleItem.setTitle(R.string.show_subtitle);
-                }
+                subtitleItem.setTitle(subtitleVisible ? R.string.hide_subtitle : R.string.show_subtitle);
             }
 
             @Override
@@ -82,13 +70,9 @@ public class TaskListFragment extends Fragment {
                 int itemId = item.getItemId();
 
                 if (itemId == R.id.new_task) {
-                    // Obsługa tworzenia nowego zadania
-                    Task task = new Task();
-                    TaskStorage.getInstance().getTasks().add(task);
-                    updateView();
+                    showNewTaskDialog();
                     return true;
                 } else if (itemId == R.id.show_subtitle) {
-                    // Wywołaj metodę do aktualizacji podtytułu
                     subtitleVisible = !subtitleVisible;
                     getActivity().invalidateOptionsMenu();
                     updateSubtitle();
@@ -97,23 +81,60 @@ public class TaskListFragment extends Fragment {
                     return false;
                 }
             }
+
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
+    private void showNewTaskDialog() {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.dialog_new_task, null);
 
+        EditText taskNameInput = dialogView.findViewById(R.id.task_name_input);
+        EditText taskDetailsInput = dialogView.findViewById(R.id.task_details_input);
+        Spinner categorySpinner = dialogView.findViewById(R.id.task_category_spinner);
+        TextView dateTextView = dialogView.findViewById(R.id.task_date_text);
 
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Category.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+
+        Calendar calendar = Calendar.getInstance();
+        dateTextView.setOnClickListener(v -> new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {
+            calendar.set(year, month, dayOfMonth);
+            dateTextView.setText(String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth));
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show());
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Nowe Zadanie")
+                .setView(dialogView)
+                .setPositiveButton("Dodaj", (dialog, which) -> {
+                    String name = taskNameInput.getText().toString();
+                    String details = taskDetailsInput.getText().toString();
+                    Category selectedCategory = (Category) categorySpinner.getSelectedItem();
+                    Date selectedDate = calendar.getTime();
+                    addNewTask(name, details, selectedCategory, selectedDate);
+                })
+                .setNegativeButton("Anuluj", null)
+                .show();
+    }
+
+    private void addNewTask(String name, String details, Category category, Date date) {
+        Task newTask = new Task();
+        newTask.setName(name);
+        newTask.setDetails(details);
+        newTask.setCategory(category);
+        newTask.setDate(date);
+
+        TaskStorage.getInstance().addTask(newTask); // Dodaje zadanie do TaskStorage i powiadamia obserwatorów
+    }
 
     private class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
         private List<Task> tasks;
 
-
-
-        // Konstruktor przyjmujący listę zadań
         public TaskAdapter(List<Task> tasks) {
             this.tasks = tasks;
         }
 
-        // Tworzy nowy TaskHolder (dla każdego elementu listy)
         @NonNull
         @Override
         public TaskHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -121,23 +142,17 @@ public class TaskListFragment extends Fragment {
             return new TaskHolder(layoutInflater, parent);
         }
 
-        // Łączymy zadanie z widokami w TaskHolderze
         @Override
         public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
             Task task = tasks.get(position);
-
-            // Pobieramy referencję do CheckBox z TaskHoldera
             CheckBox checkBox = holder.getCheckBox();
 
-            // Ustawiamy stan CheckBox zgodnie z wartością isDone dla danego zadania
             checkBox.setChecked(task.isDone());
 
-            // Dodajemy listener, który ustawia stan zadania na podstawie zaznaczenia CheckBox
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 task.setDone(isChecked);
-                recyclerView.post(() -> adapter.notifyItemChanged(holder.getBindingAdapterPosition()));
+                TaskStorage.getInstance().updateTasksLiveData(); // Powiadomienie obserwatorów
             });
-
 
             holder.bind(task);
         }
@@ -146,24 +161,6 @@ public class TaskListFragment extends Fragment {
         public int getItemCount() {
             return tasks.size();
         }
-
-
-    }
-
-    private void updateView() {
-        // Pobranie instancji TaskStorage (singleton)
-        TaskStorage taskStorage = TaskStorage.getInstance();
-        // Pobranie listy zadań z TaskStorage
-        List<Task> tasks = taskStorage.getTasks();
-
-        if (adapter == null) {
-            adapter = new TaskAdapter(tasks);
-            recyclerView.setAdapter(adapter);
-        } else {
-            adapter.notifyDataSetChanged();
-        }
-
-        updateSubtitle(); // Aktualizacja podtytułu
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -173,43 +170,31 @@ public class TaskListFragment extends Fragment {
         private ImageView iconImageView;
         private CheckBox taskCheckBox;
 
-        // Konstruktor TaskHolder
         public TaskHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_task, parent, false));
-
-            // Inicjalizacja widoków
             nameTextView = itemView.findViewById(R.id.task_item_name);
             dateTextView = itemView.findViewById(R.id.task_item_date);
             iconImageView = itemView.findViewById(R.id.category_icon);
             taskCheckBox = itemView.findViewById(R.id.task_checkbox);
-
-            // Ustawienie nasłuchiwania kliknięć na cały element listy
             itemView.setOnClickListener(this);
         }
 
-        // Metoda wiążąca dane zadania z widokami
         public void bind(Task task) {
-            this.task = task;  // Przechowujemy zadanie
-            nameTextView.setText(task.getName());  // Ustawiamy nazwę zadania w widoku
-            dateTextView.setText(task.getDate().toString());  // Ustawiamy datę zadania w widoku
+            this.task = task;
+            nameTextView.setText(task.getName());
+            dateTextView.setText(task.getDate().toString());
 
-
-            // Ustawienie ikony w zależności od kategorii
             if (task.getCategory().equals(Category.HOME)) {
                 iconImageView.setImageResource(R.drawable.ic_house);
             } else if (task.getCategory().equals(Category.STUDIES)) {
                 iconImageView.setImageResource(R.drawable.ic_study);
             }
 
-            // Ustawienie przekreślenia, jeśli zadanie jest wykonane
             if (task.isDone()) {
                 nameTextView.setPaintFlags(nameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 nameTextView.setPaintFlags(nameTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             }
-
-
-
         }
 
         public CheckBox getCheckBox() {
@@ -218,29 +203,15 @@ public class TaskListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            // do uruchomienia main activity
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.putExtra("KEY_EXTRA_TASK_ID", task.getId());
             startActivity(intent);
         }
-
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateSubtitle(); // do aktualizowania zadan ktore jeszcze musimy wykonac (update subtitle)
-        updateView();  // Zaktualizowanie widoku listy
     }
 
     public void updateSubtitle() {
-        // Pobierz instancję TaskStorage
-        TaskStorage taskStorage = TaskStorage.getInstance();
-        // Pobierz listę wszystkich zadań
-        List<Task> tasks = taskStorage.getTasks();
+        List<Task> tasks = TaskStorage.getInstance().getTasksList();
 
-        // Zlicz niewykonane zadania
         int todoTasksCount = 0;
         for (Task task : tasks) {
             if (!task.isDone()) {
@@ -248,21 +219,28 @@ public class TaskListFragment extends Fragment {
             }
         }
 
-        // Utwórz tekst podtytułu z formatem tekstu
         String subtitle = getString(R.string.subtitle_format, todoTasksCount);
         if (!subtitleVisible) {
-            subtitle = null; // Ukrycie podtytułu
+            subtitle = null;
         }
 
-        // Ustaw podtytuł na ActionBar
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         if (appCompatActivity != null && appCompatActivity.getSupportActionBar() != null) {
-            if (subtitleVisible) {
-                appCompatActivity.getSupportActionBar().setSubtitle(subtitle);
-            } else {
-                appCompatActivity.getSupportActionBar().setSubtitle(null);
-            }
+            appCompatActivity.getSupportActionBar().setSubtitle(subtitleVisible ? subtitle : null);
         }
+    }
+
+
+    private void setupObservers() {
+        TaskStorage.getInstance().getTasksLiveData().observe(getViewLifecycleOwner(), tasks -> {
+            if (adapter == null) {
+                adapter = new TaskAdapter(tasks);
+                recyclerView.setAdapter(adapter);
+            } else {
+                adapter.notifyDataSetChanged();
+            }
+            updateSubtitle();
+        });
     }
 
     @Override
@@ -270,10 +248,4 @@ public class TaskListFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putBoolean("subtitleVisible", subtitleVisible);
     }
-
-
-
-
-
-
 }

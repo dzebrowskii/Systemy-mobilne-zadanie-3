@@ -1,56 +1,52 @@
 package com.example.mainactivity;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class TaskStorage {
-    // Tworzymy jedyną instancję klasy TaskStorage (Singleton)
-    private static final TaskStorage taskStorage = new TaskStorage();
+    private static final TaskStorage instance = new TaskStorage();
+    private final MutableLiveData<List<Task>> tasksLiveData;
 
-    private final List<Task> tasks;
-
-    // Metoda zwracająca jedyną instancję klasy TaskStorage
-    public static TaskStorage getInstance() {
-        return taskStorage;
+    private TaskStorage() {
+        tasksLiveData = new MutableLiveData<>(new ArrayList<>());
     }
 
-    // Prywatny konstruktor (tylko klasa TaskStorage może się zainicjować)
-    private TaskStorage() {
-        tasks = new ArrayList<>();
+    public static TaskStorage getInstance() {
+        return instance;
+    }
 
-        // Dodawanie zadan
-        for (int i = 1; i <= 150; i++) {
-            Task task = new Task();
-            task.setName("Pilne zadanie numer " + i);
-            task.setDone(i % 3 == 0);  // Co trzecie zadanie jest oznaczone jako wykonane
-
-            if (i % 3 == 0) {
-                task.setCategory(Category.STUDIES); // Co trzecie zadanie ma kategorię STUDIES
-            } else {
-                task.setCategory(Category.HOME); // Pozostałe zadania mają kategorię HOME
-            }
-
-            tasks.add(task);
+    public void addTask(Task task) {
+        List<Task> currentTasks = tasksLiveData.getValue();
+        if (currentTasks != null) {
+            currentTasks.add(task);
+            tasksLiveData.setValue(currentTasks); // Aktualizacja LiveData
         }
     }
 
-    // Metoda zwracająca całą listę zadań
-    public List<Task> getTasks() {
-        return tasks;
+    public LiveData<List<Task>> getTasksLiveData() {
+        return tasksLiveData;
     }
 
-    // Metoda zwracająca zadanie o podanym ID
+    public List<Task> getTasksList() {
+        return tasksLiveData.getValue() != null ? tasksLiveData.getValue() : new ArrayList<>();
+    }
+
+    public void updateTasksLiveData() {
+        tasksLiveData.setValue(tasksLiveData.getValue());
+    }
+
+    // Dodaj metodę `getTask(UUID id)` do wyszukiwania zadania po ID
     public Task getTask(UUID id) {
-        for (Task task : tasks) {
+        List<Task> currentTasks = getTasksList();
+        for (Task task : currentTasks) {
             if (task.getId().equals(id)) {
                 return task;
             }
         }
-        return null;  // Jeśli nie znaleziono zadania o danym ID zwracamy nulla
-    }
-
-    public void addTask(Task task) {
-        tasks.add(task);
+        return null;  // Zwraca null, jeśli zadanie o podanym ID nie zostanie znalezione
     }
 }
